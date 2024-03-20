@@ -1,4 +1,7 @@
 package ru.cringules.moodtool
 
-class MoodToolApplication {
-}
+import android.app.Application
+import dagger.hilt.android.HiltAndroidApp
+
+@HiltAndroidApp
+class MoodToolApplication : Application()

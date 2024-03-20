@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class LoginDataStore @Inject constructor(@ApplicationContext private val context: Context) {
+class AuthDataStore @Inject constructor(@ApplicationContext private val context: Context) {
     companion object {
         private val Context.loginDataStore: DataStore<Preferences> by preferencesDataStore(name = "login")
 

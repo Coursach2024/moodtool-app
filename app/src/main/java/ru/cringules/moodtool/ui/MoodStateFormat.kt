@@ -1,6 +1,6 @@
 package ru.cringules.moodtool.ui
 
-import ru.cringules.moodtool.MoodEntry
+import ru.cringules.moodtool.model.MoodEntry
 
 private fun formatScale(value: Int, positiveLabel: String, negativeLabel: String): String {
     if (value < 0) {
@@ -11,17 +11,17 @@ private fun formatScale(value: Int, positiveLabel: String, negativeLabel: String
 }
 
 fun MoodEntry.formatAngryAfraid(): String {
-    return formatScale(angryAfraid, "Angry", "Afraid")
+    return formatScale(mood.angryAfraid, "Angry", "Afraid")
 }
 
 fun MoodEntry.formatCheerfulDepressed(): String {
-    return formatScale(cheerfulDepressed, "Cheerful", "Depressed")
+    return formatScale(mood.cheerfulDepressed, "Cheerful", "Depressed")
 }
 
 fun MoodEntry.formatWillfulYielding(): String {
-    return formatScale(willfulYielding, "Willful", "Yielding")
+    return formatScale(mood.willfulYielding, "Willful", "Yielding")
 }
 
 fun MoodEntry.formatPressuredLonely(): String {
-    return formatScale(pressuredLonely, "Pressured", "Lonely")
+    return formatScale(mood.pressuredLonely, "Pressured", "Lonely")
 }

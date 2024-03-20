@@ -1,6 +1,6 @@
-package ru.cringules.moodtool.ui
+package ru.cringules.moodtool.auth
 
-enum class AuthorizationState {
+enum class AuthState {
     Loading,
     Unauthorized,
     Authorized,

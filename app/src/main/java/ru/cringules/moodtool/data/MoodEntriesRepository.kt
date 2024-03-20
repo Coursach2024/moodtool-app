@@ -1,36 +1,49 @@
 package ru.cringules.moodtool.data
 
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
-import retrofit2.Retrofit
+import kotlinx.coroutines.flow.first
 import ru.cringules.moodtool.MoodApiService
-import ru.cringules.moodtool.MoodEntry
+import ru.cringules.moodtool.model.MoodConditions
+import ru.cringules.moodtool.MoodEntriesState
+import ru.cringules.moodtool.model.MoodEntry
+import ru.cringules.moodtool.PredictedMoodState
+import javax.inject.Inject
 
 interface MoodEntriesRepository {
-    suspend fun getMoodEntries() : List<MoodEntry>
+    suspend fun getMoodEntries(): MoodEntriesState
     suspend fun createMoodEntry(moodEntry: MoodEntry)
+    suspend fun predictMood(moodConditions: MoodConditions): PredictedMoodState
 }
 
-class MoodEntriesApiRepository : MoodEntriesRepository {
-    private val baseUrl = "http://192.168.0.106:8080"
+class MoodEntriesApiRepository @Inject constructor(
+    private val authDataStore: AuthDataStore,
+    private val moodApiService: MoodApiService
+) : MoodEntriesRepository {
 
-    @OptIn(ExperimentalSerializationApi::class)
-    private val retrofit = Retrofit.Builder()
-        .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
-        .baseUrl(baseUrl)
-        .build()
-
-    private val retrofitService by lazy {
-        retrofit.create(MoodApiService::class.java)
-    }
-
-    override suspend fun getMoodEntries(): List<MoodEntry> {
-        return retrofitService.getMoodEntries()
+    override suspend fun getMoodEntries(): MoodEntriesState {
+        val token = authDataStore.getToken.first() ?: return MoodEntriesState.Error
+        return try {
+            MoodEntriesState.Success(moodApiService.getMoodEntries("Bearer $token"))
+        } catch (e: Exception) {
+            MoodEntriesState.Error
+        }
     }
 
     override suspend fun createMoodEntry(moodEntry: MoodEntry) {
-        retrofitService.createMoodEntry(moodEntry)
+        val token = authDataStore.getToken.first()
+        moodApiService.createMoodEntry(moodEntry, "Bearer $token")
+    }
+
+    override suspend fun predictMood(moodConditions: MoodConditions): PredictedMoodState {
+        val token = authDataStore.getToken.first() ?: return PredictedMoodState.Error
+        return try {
+            PredictedMoodState.Success(
+                moodApiService.predictMood(
+                    moodConditions,
+                    "Bearer $token"
+                )
+            )
+        } catch (e: Exception) {
+            PredictedMoodState.Error
+        }
     }
 }

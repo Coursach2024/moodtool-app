@@ -1,3 +1,8 @@
 package ru.cringules.moodtool.auth
 
-data class AuthCheck()
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class AuthCheck(
+    val username: String
+)
