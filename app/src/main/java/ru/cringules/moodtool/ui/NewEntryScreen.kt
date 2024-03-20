@@ -51,14 +51,15 @@ import kotlin.time.Duration.Companion.minutes
 @Composable
 fun MoodScreen(
     viewModel: MoodViewModel = viewModel(),
-    onAdd: () -> Unit
+    onAdd: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val dateTimeFormatter = DateTimeFormatter
         .ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
         .withLocale(Locale.getDefault())
         .withZone(ZoneId.systemDefault())
 
-    Scaffold { paddingValues ->
+    Scaffold(modifier = modifier) { paddingValues ->
         var dateDialogShown by remember {
             mutableStateOf(false)
         }
