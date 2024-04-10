@@ -114,48 +114,48 @@ fun CorrelationTable(
         Row(modifier = Modifier.padding(vertical = 2.dp)) {
             Spacer(modifier = Modifier.weight(1f))
             AxisLabel(
-                positiveLabel = "Angry",
-                negativeLabel = "Afraid",
+                negativeLabel = "Angry",
+                positiveLabel = "Afraid",
                 modifier = Modifier.weight(1f)
             )
             AxisLabel(
-                positiveLabel = "Cheerful",
-                negativeLabel = "Depressed",
+                negativeLabel = "Cheerful",
+                positiveLabel = "Depressed",
                 modifier = Modifier.weight(1f)
             )
             AxisLabel(
-                positiveLabel = "Willful",
-                negativeLabel = "Yielding",
+                negativeLabel = "Willful",
+                positiveLabel = "Yielding",
                 modifier = Modifier.weight(1f)
             )
             AxisLabel(
-                positiveLabel = "Pressured",
-                negativeLabel = "Lonely",
+                negativeLabel = "Pressured",
+                positiveLabel = "Lonely",
                 modifier = Modifier.weight(1f)
             )
         }
         CorrelationRow(
-            positiveLabel = "Angry",
-            negativeLabel = "Afraid",
+            negativeLabel = "Angry",
+            positiveLabel = "Afraid",
             correlations = correlations.angryAfraid,
             modifier = Modifier.padding(vertical = 2.dp)
         )
         CorrelationRow(
-            positiveLabel = "Cheerful",
-            negativeLabel = "Depressed",
+            negativeLabel = "Cheerful",
+            positiveLabel = "Depressed",
             correlations = correlations.cheerfulDepressed,
             modifier = Modifier.padding(vertical = 2.dp)
 
         )
         CorrelationRow(
-            positiveLabel = "Willful",
-            negativeLabel = "Yielding",
+            negativeLabel = "Willful",
+            positiveLabel = "Yielding",
             correlations = correlations.willfulYielding,
             modifier = Modifier.padding(vertical = 2.dp)
         )
         CorrelationRow(
-            positiveLabel = "Pressured",
-            negativeLabel = "Lonely",
+            negativeLabel = "Pressured",
+            positiveLabel = "Lonely",
             correlations = correlations.pressuredLonely,
             modifier = Modifier.padding(vertical = 2.dp)
         )
@@ -164,15 +164,15 @@ fun CorrelationTable(
 
 @Composable
 fun CorrelationRow(
-    positiveLabel: String,
     negativeLabel: String,
+    positiveLabel: String,
     correlations: Correlations,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         AxisLabel(
-            positiveLabel = positiveLabel,
             negativeLabel = negativeLabel,
+            positiveLabel = positiveLabel,
             modifier = Modifier.weight(1f)
         )
         CorrelationIcon(
@@ -196,8 +196,8 @@ fun CorrelationRow(
 
 @Composable
 fun AxisLabel(
-    positiveLabel: String,
     negativeLabel: String,
+    positiveLabel: String,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {

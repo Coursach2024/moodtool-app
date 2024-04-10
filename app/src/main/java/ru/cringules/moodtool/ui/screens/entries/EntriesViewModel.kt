@@ -10,13 +10,14 @@ import kotlinx.coroutines.launch
 import ru.cringules.moodtool.data.model.MoodEntry
 import ru.cringules.moodtool.data.model.RepositoryResponse
 import ru.cringules.moodtool.data.repository.MyRecordRepository
-import ru.cringules.moodtool.state.MoodEntriesState
+import ru.cringules.moodtool.domain.ListEntriesUseCase
+import ru.cringules.moodtool.domain.ListUserEntriesUseCase
 import javax.inject.Inject
 
 
 @HiltViewModel
 class EntriesViewModel @Inject constructor(
-    private val myRecordRepository: MyRecordRepository
+    private val listEntriesUseCase: ListEntriesUseCase
 ) : ViewModel() {
     var entriesState: RepositoryResponse<List<MoodEntry>> by mutableStateOf(RepositoryResponse.Loading)
         private set
@@ -28,7 +29,7 @@ class EntriesViewModel @Inject constructor(
     fun loadMoodEntries() {
         viewModelScope.launch {
             entriesState = RepositoryResponse.Loading
-            entriesState = myRecordRepository.getRecords()
+            entriesState = listEntriesUseCase()
         }
     }
 }

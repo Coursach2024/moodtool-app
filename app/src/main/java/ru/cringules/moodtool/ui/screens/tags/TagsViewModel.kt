@@ -10,11 +10,12 @@ import kotlinx.coroutines.launch
 import ru.cringules.moodtool.data.model.Correlations
 import ru.cringules.moodtool.data.model.RepositoryResponse
 import ru.cringules.moodtool.data.repository.AnalyticsRepository
+import ru.cringules.moodtool.domain.ListTagDependenciesUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class TagsViewModel @Inject constructor(
-    private val analyticsRepository: AnalyticsRepository
+    private val getDependenciesUseCase: ListTagDependenciesUseCase
 ) : ViewModel() {
     var tagsCorrelationsState: RepositoryResponse<Map<String, Correlations>> by mutableStateOf(
         RepositoryResponse.Loading
@@ -23,7 +24,7 @@ class TagsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            tagsCorrelationsState = analyticsRepository.getDependencies()
+            tagsCorrelationsState = getDependenciesUseCase()
         }
     }
 }

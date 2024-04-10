@@ -9,11 +9,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import ru.cringules.moodtool.data.model.RepositoryResponse
 import ru.cringules.moodtool.data.repository.PermissionRepository
+import ru.cringules.moodtool.domain.ListAvailableUsersUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class PeopleViewModel @Inject constructor(
-    private val permissionRepository: PermissionRepository
+    private val listAvailableUsersUseCase: ListAvailableUsersUseCase
 ) : ViewModel() {
     var peopleState: RepositoryResponse<List<String>> by mutableStateOf(RepositoryResponse.Loading)
         private set
@@ -25,7 +26,7 @@ class PeopleViewModel @Inject constructor(
     fun loadPeople() {
         viewModelScope.launch {
             peopleState = RepositoryResponse.Loading
-            peopleState = permissionRepository.getIssuers()
+            peopleState = listAvailableUsersUseCase()
         }
     }
 }

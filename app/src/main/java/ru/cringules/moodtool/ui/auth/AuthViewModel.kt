@@ -10,17 +10,24 @@ import kotlinx.coroutines.launch
 import ru.cringules.moodtool.data.model.RepositoryResponse
 import ru.cringules.moodtool.data.model.UserCredentials
 import ru.cringules.moodtool.data.repository.AuthRepository
-import ru.cringules.moodtool.state.AuthState
+import ru.cringules.moodtool.domain.CheckStatusUseCase
+import ru.cringules.moodtool.domain.LoginUseCase
+import ru.cringules.moodtool.domain.LogoutUseCase
+import ru.cringules.moodtool.domain.RegisterUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val loginUseCase: LoginUseCase,
+    private val registerUseCase: RegisterUseCase,
+    private val logoutUseCase: LogoutUseCase,
+    private val checkStatusUseCase: CheckStatusUseCase
 ) : ViewModel() {
     var authState: RepositoryResponse<Any> by mutableStateOf(RepositoryResponse.Loading)
         private set
     var userCredentials by mutableStateOf(UserCredentials())
         private set
+    var passwordConfirmation: String by mutableStateOf("")
 
     init {
         checkAuthorization()
@@ -29,7 +36,7 @@ class AuthViewModel @Inject constructor(
     fun checkAuthorization() {
         viewModelScope.launch {
             authState = RepositoryResponse.Loading
-            authState = authRepository.checkLogin()
+            authState = checkStatusUseCase()
         }
     }
 
@@ -44,20 +51,20 @@ class AuthViewModel @Inject constructor(
     fun login() {
         viewModelScope.launch {
             authState = RepositoryResponse.Loading
-            authState = authRepository.login(userCredentials)
+            authState = loginUseCase(userCredentials)
         }
     }
 
     fun register() {
         viewModelScope.launch {
             authState = RepositoryResponse.Loading
-            authState = authRepository.register(userCredentials)
+            authState = registerUseCase(userCredentials)
         }
     }
 
     fun logout() {
         viewModelScope.launch {
-            authRepository.logout()
+            logoutUseCase()
             checkAuthorization()
         }
     }

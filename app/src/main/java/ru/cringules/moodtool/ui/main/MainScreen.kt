@@ -143,7 +143,7 @@ fun MainNavHost(navController: NavHostController, onLogout: () -> Unit, modifier
             }
         )
         newEntryScreen(
-            onSaved = {
+            onExit = {
                 navController.navigateToEntriesScreen()
             }
         )

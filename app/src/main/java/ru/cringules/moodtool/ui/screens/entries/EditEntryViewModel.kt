@@ -9,28 +9,29 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import ru.cringules.moodtool.data.dto.ApiResponse
 import ru.cringules.moodtool.data.model.Mood
 import ru.cringules.moodtool.data.model.MoodConditions
 import ru.cringules.moodtool.data.model.MoodEntry
 import ru.cringules.moodtool.data.model.RepositoryResponse
 import ru.cringules.moodtool.data.repository.AnalyticsRepository
 import ru.cringules.moodtool.data.repository.MyRecordRepository
+import ru.cringules.moodtool.domain.CreateEntryUseCase
+import ru.cringules.moodtool.domain.DeleteEntryUseCase
+import ru.cringules.moodtool.domain.EditEntryUseCase
+import ru.cringules.moodtool.domain.GetEntryUseCase
+import ru.cringules.moodtool.domain.GetPredictionUseCase
 import javax.inject.Inject
-
-sealed interface PredictedMoodState {
-    data class Success(val mood: Mood) : PredictedMoodState
-    object Loading : PredictedMoodState
-    object Error : PredictedMoodState
-}
 
 @HiltViewModel
 class EditEntryViewModel @Inject constructor(
-    private val myRecordRepository: MyRecordRepository,
-    private val analyticsRepository: AnalyticsRepository,
+    private val getEntryUseCase: GetEntryUseCase,
+    private val createEntryUseCase: CreateEntryUseCase,
+    private val editEntryUseCase: EditEntryUseCase,
+    private val deleteEntryUseCase: DeleteEntryUseCase,
+    private val getPredictionUseCase: GetPredictionUseCase,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    private val entryId: Int? = savedStateHandle["entryId"]
+    val entryId: Int? = savedStateHandle["entryId"]
 
     var entryState: RepositoryResponse<MoodEntry> by mutableStateOf(RepositoryResponse.Loading)
         private set
@@ -51,7 +52,7 @@ class EditEntryViewModel @Inject constructor(
                 return@launch
             }
 
-            entryState = myRecordRepository.getRecord(entryId)
+            entryState = getEntryUseCase(entryId)
             val state = entryState
             if (state is RepositoryResponse.Success) {
                 predict(state.data)
@@ -63,7 +64,7 @@ class EditEntryViewModel @Inject constructor(
         predictJob?.cancel()
         predictJob = viewModelScope.launch {
             predictedMoodState = RepositoryResponse.Loading
-            predictedMoodState = analyticsRepository.predictMood(
+            predictedMoodState = getPredictionUseCase(
                 MoodConditions(
                     timestamp = moodEntry.timestamp,
                     tags = moodEntry.tags
@@ -89,9 +90,20 @@ class EditEntryViewModel @Inject constructor(
             val state = entryState
             if (state is RepositoryResponse.Success) {
                 val result = if (entryId == null) {
-                    myRecordRepository.createMoodEntry(state.data)
+                    createEntryUseCase(state.data)
                 } else {
-                    myRecordRepository.updateRecord(entryId, state.data)
+                    editEntryUseCase(entryId, state.data)
+                }
+            }
+        }
+    }
+
+    fun delete() {
+        viewModelScope.launch {
+            val state = entryState
+            if (state is RepositoryResponse.Success) {
+                if (entryId != null) {
+                    deleteEntryUseCase(entryId)
                 }
             }
         }

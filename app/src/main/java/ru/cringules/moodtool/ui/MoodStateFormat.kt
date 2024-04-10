@@ -1,9 +1,8 @@
 package ru.cringules.moodtool.ui
 
 import ru.cringules.moodtool.data.model.Mood
-import ru.cringules.moodtool.data.model.MoodEntry
 
-private fun formatScale(value: Int, positiveLabel: String, negativeLabel: String): String {
+private fun formatScale(value: Int, negativeLabel: String, positiveLabel: String): String {
     if (value < 0) {
         return "$negativeLabel ${-value}"
     }

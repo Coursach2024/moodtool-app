@@ -1,7 +1,10 @@
 package ru.cringules.moodtool.ui.screens.entries
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,13 +14,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.InputChip
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -32,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -42,7 +51,6 @@ import ru.cringules.moodtool.data.model.Mood
 import ru.cringules.moodtool.data.model.MoodEntry
 import ru.cringules.moodtool.data.model.RepositoryResponse
 import ru.cringules.moodtool.ui.TimePickerDialog
-import ru.cringules.moodtool.ui.elements.TagChipRow
 import ru.cringules.moodtool.ui.formatAngryAfraid
 import ru.cringules.moodtool.ui.formatCheerfulDepressed
 import ru.cringules.moodtool.ui.formatPressuredLonely
@@ -60,7 +68,7 @@ import kotlin.time.Duration.Companion.minutes
 
 @Composable
 fun EditEntryScreen(
-    onSaved: () -> Unit,
+    onExit: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: EditEntryViewModel = hiltViewModel()
 ) {
@@ -77,7 +85,12 @@ fun EditEntryScreen(
                 predictedMoodState = viewModel.predictedMoodState,
                 onSave = {
                     viewModel.save()
-                    onSaved()
+                    onExit()
+                },
+                canDelete = viewModel.entryId != null,
+                onDelete = {
+                    viewModel.delete()
+                    onExit()
                 },
                 modifier = modifier
             )
@@ -100,6 +113,8 @@ fun EditEntryContent(
     onMoodChange: (Mood) -> Unit,
     predictedMoodState: RepositoryResponse<Mood>,
     onSave: () -> Unit,
+    canDelete: Boolean,
+    onDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -115,6 +130,9 @@ fun EditEntryContent(
             tags = entry.tags,
             onTagAdd = {
                 onConditionsChange(entry.copy(tags = entry.tags + it))
+            },
+            onTagRemove = {
+                onConditionsChange(entry.copy(tags = entry.tags - it))
             }
         )
 
@@ -136,8 +154,15 @@ fun EditEntryContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Button(onClick = onSave) {
-            Text(text = "Add")
+        Row {
+            if (canDelete) {
+                OutlinedButton(onClick = onDelete) {
+                    Text(text = "Delete")
+                }
+            }
+            Button(onClick = onSave) {
+                Text(text = "Save")
+            }
         }
     }
 }
@@ -148,6 +173,7 @@ fun ConditionsCard(
     onTimestampChange: (Instant) -> Unit,
     tags: List<String>,
     onTagAdd: (String) -> Unit,
+    onTagRemove: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Card(modifier = modifier) {
@@ -157,7 +183,7 @@ fun ConditionsCard(
             text = "Tags",
             style = MaterialTheme.typography.headlineSmall
         )
-        TagChipRow(tags = tags)
+        RemovableTagChipRow(tags = tags, onTagRemove = onTagRemove)
 
         var text by remember {
             mutableStateOf("")
@@ -181,6 +207,34 @@ fun ConditionsCard(
             }) {
                 Text(text = "Add tag")
             }
+        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun RemovableTagChipRow(
+    tags: List<String>,
+    onTagRemove: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    FlowRow(modifier = modifier) {
+        tags.forEach {
+            InputChip(
+                selected = false,
+                onClick = { },
+                label = {
+                    Text(text = it)
+                },
+                modifier = Modifier.padding(horizontal = 4.dp),
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Remove",
+                        modifier = Modifier.clickable { onTagRemove(it) }
+                    )
+                }
+            )
         }
     }
 }
@@ -329,34 +383,34 @@ fun MoodEditCard(
         )
         MoodSlider(
             value = mood.angryAfraid,
-            positiveLabel = "Angry",
-            negativeLabel = "Afraid",
+            negativeLabel = "Angry",
+            positiveLabel = "Afraid",
             onValueChange = {
-                onMoodChange(mood.copy(angryAfraid = it.toInt()))
+                onMoodChange(mood.copy(angryAfraid = it))
             }
         )
         MoodSlider(
             value = mood.cheerfulDepressed,
-            positiveLabel = "Cheerful",
-            negativeLabel = "Depressed",
+            negativeLabel = "Cheerful",
+            positiveLabel = "Depressed",
             onValueChange = {
-                onMoodChange(mood.copy(cheerfulDepressed = it.toInt()))
+                onMoodChange(mood.copy(cheerfulDepressed = it))
             }
         )
         MoodSlider(
             value = mood.willfulYielding,
-            positiveLabel = "Willful",
-            negativeLabel = "Yielding",
+            negativeLabel = "Willful",
+            positiveLabel = "Yielding",
             onValueChange = {
-                onMoodChange(mood.copy(willfulYielding = it.toInt()))
+                onMoodChange(mood.copy(willfulYielding = it))
             }
         )
         MoodSlider(
             value = mood.pressuredLonely,
-            positiveLabel = "Pressured",
-            negativeLabel = "Lonely",
+            negativeLabel = "Pressured",
+            positiveLabel = "Lonely",
             onValueChange = {
-                onMoodChange(mood.copy(pressuredLonely = it.toInt()))
+                onMoodChange(mood.copy(pressuredLonely = it))
             }
         )
     }
@@ -365,18 +419,29 @@ fun MoodEditCard(
 @Composable
 fun MoodSlider(
     value: Int,
-    positiveLabel: String,
     negativeLabel: String,
+    positiveLabel: String,
     onValueChange: (Int) -> Unit
 ) {
     Column {
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = negativeLabel)
-            Text(text = "${if (value < 0) negativeLabel else positiveLabel} ${abs(value)}")
-            Text(text = positiveLabel)
+            Text(
+                text = negativeLabel,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Start
+            )
+            Text(
+                text = "${if (value < 0) negativeLabel else positiveLabel} ${abs(value)}",
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = positiveLabel,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.End
+            )
         }
         Slider(
             value = value.toFloat(),
@@ -392,5 +457,5 @@ fun MoodSlider(
 @Preview
 @Composable
 private fun EditEntryScreenPreview() {
-    EditEntryScreen(onSaved = {}, modifier = Modifier.fillMaxSize())
+    EditEntryScreen(onExit = {}, modifier = Modifier.fillMaxSize())
 }

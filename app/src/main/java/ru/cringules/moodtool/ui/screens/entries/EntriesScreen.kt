@@ -12,10 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import ru.cringules.moodtool.data.model.RepositoryResponse
-import ru.cringules.moodtool.state.MoodEntriesState
+import ru.cringules.moodtool.ui.elements.MoodEntryList
 import ru.cringules.moodtool.ui.screens.misc.ErrorScreen
 import ru.cringules.moodtool.ui.screens.misc.LoadingScreen
-import ru.cringules.moodtool.ui.elements.MoodEntryList
 
 @Composable
 fun EntriesScreen(

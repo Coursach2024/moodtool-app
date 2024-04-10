@@ -1,4 +1,4 @@
-package ru.cringules.moodtool.activity
+package ru.cringules.moodtool.ui.activity
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

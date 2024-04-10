@@ -7,9 +7,9 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 
-fun NavGraphBuilder.newEntryScreen(onSaved: () -> Unit, modifier: Modifier = Modifier) {
+fun NavGraphBuilder.newEntryScreen(onExit: () -> Unit, modifier: Modifier = Modifier) {
     composable("entries/new") {
-        EditEntryScreen(onSaved = onSaved, modifier = modifier)
+        EditEntryScreen(onExit = onExit, modifier = modifier)
     }
 }
 
@@ -22,7 +22,7 @@ fun NavGraphBuilder.editEntryScreen(onSaved: () -> Unit, modifier: Modifier = Mo
         "entries/{entryId}",
         arguments = listOf(navArgument("entryId") { type = NavType.IntType })
     ) {
-        EditEntryScreen(onSaved = onSaved, modifier = modifier)
+        EditEntryScreen(onExit = onSaved, modifier = modifier)
     }
 }
 

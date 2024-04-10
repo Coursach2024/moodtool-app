@@ -77,26 +77,26 @@ fun TagCard(tag: String, tagCorrelations: Correlations, modifier: Modifier = Mod
             Row(modifier = Modifier.padding(top = 5.dp)) {
                 CorrelationIndicator(
                     value = tagCorrelations.angryAfraid,
-                    positiveLabel = "Afraid",
                     negativeLabel = "Angry",
+                    positiveLabel = "Afraid",
                     modifier = Modifier.weight(1f)
                 )
                 CorrelationIndicator(
                     value = tagCorrelations.cheerfulDepressed,
-                    positiveLabel = "Depressed",
                     negativeLabel = "Cheerful",
+                    positiveLabel = "Depressed",
                     modifier = Modifier.weight(1f)
                 )
                 CorrelationIndicator(
                     value = tagCorrelations.willfulYielding,
-                    positiveLabel = "Yielding",
                     negativeLabel = "Willful",
+                    positiveLabel = "Yielding",
                     modifier = Modifier.weight(1f)
                 )
                 CorrelationIndicator(
                     value = tagCorrelations.pressuredLonely,
-                    positiveLabel = "Lonely",
                     negativeLabel = "Pressured",
+                    positiveLabel = "Lonely",
                     modifier = Modifier.weight(1f)
                 )
             }
@@ -107,8 +107,8 @@ fun TagCard(tag: String, tagCorrelations: Correlations, modifier: Modifier = Mod
 @Composable
 fun CorrelationIndicator(
     value: Double,
-    positiveLabel: String,
     negativeLabel: String,
+    positiveLabel: String,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
